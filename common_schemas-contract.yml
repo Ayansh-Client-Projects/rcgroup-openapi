@@ -18,6 +18,30 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    ErrorData:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z]{2-15}-\d{3}
+          maxLength: 18
+          minLength: 5
+        message:
+          type: string
+      required: ["code", "message"]  
+    ErrorResponseBody:
+      type: object
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorData'
+          maxItems: 5
+          minItems: 1
+      required:
+        - "errors"
     MobileNumber:
       type: integer
       format: int64

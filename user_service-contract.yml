@@ -49,11 +49,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CustomerList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/customers/v1/{customerId}:
     get:
       security:
         - BearerAuth: []
       operationId: getCustomerInfo
+      parameters:
+        - in: path
+          name: customerId
+          schema:
+            type: string
+          required: true
+          description: Customer ID whose information is to be fetched
       responses:
         '200':
           description: Successfully fetched customer info
@@ -61,29 +74,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Customer"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
     post:
       security:
         - BearerAuth: []
-      
-        
+      operationId: updateCustomerInfo
+      parameters:
+        - in: path
+          name: customerId
+          schema:
+            type: string
+          required: true
+          description: Customer ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated customer info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+
 components:
   securitySchemes:
     BearerAuth:
       $ref: "common_schemas-contract.yml#/components/securitySchemes/BearerAuth"
   schemas:
     # Main Schemas
-    ErrorData:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          type: string
-          pattern: ^[A-Z]{2-15}-\d{3}
-          maxLength: 18
-          minLength: 5
-        message:
-          type: string
-      required: ["code", "message"]
     CustomerUpdateRequestBody:
       type: object
       additionalProperties: false
@@ -148,6 +181,7 @@ components:
           properties:
             mobileNumber:
               $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+          required: [mobileNumber]
     AdminStaffUpdateRequestBody:
       type: object
       additionalProperties: false
@@ -196,6 +230,7 @@ components:
           properties:
             mobileNumber:
               $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+          required: [mobileNumber]
 
     # Internal Schemas
     CompanyName:
@@ -252,6 +287,7 @@ components:
         accountNumber:
           type: number
           maxLength: 18
+      required: [accountHolderName, ifscCode, accountNumber]
     Address:
       type: object
       additionalProperties: false
