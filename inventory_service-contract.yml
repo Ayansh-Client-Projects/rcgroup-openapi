@@ -30,12 +30,18 @@ paths:
             application/json: 
               schema:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
-  /v1/categories/v1/{categoryId}/subcategories:
+  /v1/categories/v1/{categoryId}/v1/subcategories:
     get:
       summary: Get all sub-categories of the given category
       operationId: getSubCategoryList
       security:
         - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: 'Successfully fetched sub-category list for the given category'
@@ -49,12 +55,18 @@ paths:
             application/json: 
               schema:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
-  /v1/categories/v1/{categoryId}/products:
+  /v1/categories/v1/{categoryId}/v1/products:
     get:
       summary: Gets products that belong to the given category
       operationId: getProductList
       security:
         - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: 'Successfully fetched product list'
@@ -68,12 +80,23 @@ paths:
             application/json: 
               schema:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
-  /v1/categories/v1/{categoryId}/products/{productId}:
+  /v1/categories/v1/{categoryId}/v1/products/v1/{productId}:
     get:
       summary: Get Details of Individual Product
       operationId: getProductInfo
       security:
         - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Successfully fetched individual product info
@@ -92,6 +115,17 @@ paths:
       operationId: deleteProduct
       security:
         - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
       responses:
         '204':
           description: Successfully deleted individual product
@@ -104,6 +138,19 @@ paths:
     post:
       summary: Update details of individual product. Only role = admin/admin-staff is allowed 
       operationId: updateProductInfo
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
       requestBody:
         required: true
         content:
@@ -123,10 +170,12 @@ paths:
             application/json: 
               schema:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
-  /v1/products/upload:
+  /v1/products/v1/upload:
     post:
       summary: Upload excel of products to update on the platform. Only role=admin/admin-staff can do this
       operationId: groupUpdateProductDetails
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -232,5 +281,5 @@ components:
       minItems: 0
     Product:
       allOf:
-        - $ref: "#components/schemas/UpdateProductRequestBody"
+        - $ref: "#/components/schemas/UpdateProductRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
