@@ -5,14 +5,6 @@ info:
   description: Common Schemas
   version: 1.0.0
 
-servers:
-  - url: https://auth.rcgroup.client.embrays.live
-    description: Production server (uses live data)
-  - url: https://auth-dev.rcgroup.client.embrays.live
-    description: Development server (uses test data)
-
-paths: -
-
 components:
   securitySchemes:
     BearerAuth:

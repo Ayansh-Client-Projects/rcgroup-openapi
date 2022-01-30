@@ -6,9 +6,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://auth.rcgroup.client.embrays.live
+  - url: https://api.rcgroup.client.embrays.live/user
     description: Production server (uses live data)
-  - url: https://auth-dev.rcgroup.client.embrays.live
+  - url: https://api-dev.rcgroup.client.embrays.live/user
     description: Development server (uses test data)
 
 paths:
@@ -110,7 +110,105 @@ paths:
             application/json: 
               schema:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
-
+  /v1/salesmen:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getSalesmenList
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Get user list based on search query
+        - in: query
+          name: pincode
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on pincode query
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on page number for pagination
+        - in: query
+          name: perPageQty
+          schema:
+            type: integer
+          required: false
+          description: Get N (perPageQty) number of customers in this response
+      responses:
+        '200':
+          description: Successfully fetched salesman list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SalesmanList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/salesmen/v1/{salesmanId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getSalesmanInfo
+      parameters:
+        - in: path
+          name: salesmanId
+          schema:
+            type: string
+          required: true
+          description: Salesman ID whose information is to be fetched
+      responses:
+        '200':
+          description: Successfully fetched salesman info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Salesman"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      security:
+        - BearerAuth: []
+      operationId: updateSalesmanInfo
+      parameters:
+        - in: path
+          name: salesmanId
+          schema:
+            type: string
+          required: true
+          description: Salesman ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SalesmanUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated salesman info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Salesman"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  
 components:
   securitySchemes:
     BearerAuth:

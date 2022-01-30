@@ -6,9 +6,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://auth.rcgroup.client.embrays.live
+  - url: https://api.rcgroup.client.embrays.live/auth
     description: Production server (uses live data)
-  - url: https://auth-dev.rcgroup.client.embrays.live
+  - url: https://api-dev.rcgroup.client.embrays.live/auth
     description: Development server (uses test data)
 
 paths:
