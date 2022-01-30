@@ -1,0 +1,235 @@
+openapi: 3.0.3
+
+info:
+  title: RC Group - User
+  description: Customer, Salesman, and Admin user service
+  version: 1.0.0
+
+servers:
+  - url: https://auth.rcgroup.client.embrays.live
+    description: Production server (uses live data)
+  - url: https://auth-dev.rcgroup.client.embrays.live
+    description: Development server (uses test data)
+
+paths:
+  /v1/customers:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getCustomerList
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Get user list based on search query
+        - in: query
+          name: pincode
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on pincode query
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on page number for pagination
+        - in: query
+          name: perPageQty
+          schema:
+            type: integer
+          required: false
+          description: Get N (perPageQty) number of customers in this response
+      responses:
+        '200':
+          description: Successfully fetched customer list
+          content:
+            application/json:
+              schema:
+                $ref:
+
+        
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    # Main Schemas
+    ErrorData:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z]{2-15}-\d{3}
+          maxLength: 18
+          minLength: 5
+        message:
+          type: string
+      required: ["code", "message"]
+    CustomerUpdateRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        companyName:
+          $ref: '#/components/schemas/CompanyName'
+        companyType:
+          $ref: '#/components/schemas/CompanyType'
+        fullName:
+          $ref: '#/components/schemas/FullName'
+        address:
+          $ref: "#/components/schemas/Address"
+        mobileNumber:
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+        email:
+          $ref: '#/components/schemas/Email'
+        gstNumber:
+          $ref: "#/components/schemas/GstNumber"
+        panNumber:
+          $ref: "#/components/schemas/PanNumber"
+        aadhaarNumber:
+          $ref: "#/components/schemas/AadhaarNumber"
+      required: ["companyName", "companyType", "fullName", "address", 
+        "mobileNumber", "email", "gstNumber", "panNumber", "aadhaarNumber"]
+    CustomerList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Customer"
+      minItems: 0
+    Customer:
+      allOf:
+        - $ref: "#components/schemas/CustomerUpdateRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+    SalesmanUpdateRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        fullName:
+          $ref: '#/components/schemas/FullName'
+        address:
+          $ref: "#/components/schemas/Address"
+        mobileNumber:
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+        email:
+          $ref: '#/components/schemas/Email'
+        panNumber:
+          $ref: "#/components/schemas/PanNumber"
+        aadhaarNumber:
+          $ref: "#/components/schemas/AadhaarNumber"
+        bankDetails:
+          $ref: "#/components/schemas/UserBankDetails"
+      required: ["fullName", "address", "mobileNumber", "email", "panNumber", "aadhaarNumber", "bankDetails"]
+    SalesmanList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Salesman"
+      minItems: 0
+    Salesman:
+      allOf:
+        - $ref: "#components/schemas/SalesmanUpdateRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+    AdminUpdateRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        fullName:
+          $ref: '#/components/schemas/FullName'
+        address:
+          $ref: "#/components/schemas/Address"
+        mobileNumber:
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+        email:
+          $ref: '#/components/schemas/Email'
+        panNumber:
+          $ref: "#/components/schemas/PanNumber"
+        aadhaarNumber:
+          $ref: "#/components/schemas/AadhaarNumber"
+        bankDetails:
+          $ref: "#/components/schemas/UserBankDetails"
+      required: ["fullName", "address", "mobileNumber", "email", "panNumber", "aadhaarNumber", "bankDetails"]
+    AdminList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Admin"
+      minItems: 0
+    Admin:
+      allOf:
+        - $ref: "#components/schemas/AdminUpdateRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+
+    # Internal Schemas
+    CompanyName:
+      type: string
+      pattern: ^[a-zA-Z ]*$
+      minLength: 5
+      maxLength: 50
+    FullName:
+      type: string
+      pattern: ^[a-zA-Z ]*$
+      minLength: 5
+      maxLength: 50
+    Email:
+      type: string
+      format: email
+    CompanyType:
+      type: string
+      enum:
+        - proprietorship
+        - partnership
+        - pvt. ltd.
+      x-enum-vars:
+        - PROPRIETORSHIP
+        - PARTNERSHIP
+        - PRIVATE_LIMITED
+    GstNumber:
+      type: string
+      pattern: ^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$
+      maxLength: 15
+      minLength: 15
+    PanNumber:
+      type: string
+      pattern: ^[A-Z]{5}[0-9]{4}[A-Z]{1}$
+      maxLength: 10
+      minLength: 10
+    AadhaarNumber:
+      type: string
+      pattern: ^[01]\d{3}[\s-]?\d{4}[\s-]?\d{4}$
+      maxLength: 12
+      minLength: 12
+    IfscCode:
+      type: string
+      pattern: ^[A-Z]{4}0[A-Z0-9]{6}$
+      maxLength: 11
+      minLength: 11
+    UserBankDetails:
+      type: object
+      additionalProperties: false
+      properties:
+        accountHolderName:
+          $ref: "#/components/schemas/FullName"
+        ifscCode:
+          $ref: "#/components/schemas/IfscCode"
+        accountNumber:
+          type: number
+          maxLength: 18
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        landmark:
+          type: string
+      required: ["line1", "line2", "city", "state", "country"]

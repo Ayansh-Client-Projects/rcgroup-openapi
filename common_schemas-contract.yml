@@ -1,0 +1,50 @@
+openapi: 3.0.3
+
+info:
+  title: RC Group - Common Schemas
+  description: Common Schemas
+  version: 1.0.0
+
+servers:
+  - url: https://auth.rcgroup.client.embrays.live
+    description: Production server (uses live data)
+  - url: https://auth-dev.rcgroup.client.embrays.live
+    description: Development server (uses test data)
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    MobileNumber:
+      type: integer
+      format: int64
+      pattern: ^[6-9]\d{9}$
+      maximum: 9999999999
+      minimum: 6000000000
+    UserType:
+      type: string
+      enum:
+        - ADMIN
+        - ADMIN_STAFF
+        - SALESMAN
+        - CUSTOMER
+    Id:
+      type: string
+    Timestamp:
+      type: number
+      description: EPOCH number
+    ObjectMetaInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "common_schemas-contract.yml#/components/schemas/Id"
+        createdOn:
+          $ref: "common_schemas-contract.yml#/components/schemas/Timestamp"
+        updatedOn:
+          $ref: "common_schemas-contract.yml#/components/schemas/Timestamp"
+      required: ["id", "createdOn", "updatedOn"]
+    

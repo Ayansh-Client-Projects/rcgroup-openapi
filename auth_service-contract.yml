@@ -1,0 +1,316 @@
+openapi: 3.0.3
+
+info:
+  title: RC Group - Auth
+  description: Authentication & Authorisation service
+  version: 1.0.0
+
+servers:
+  - url: https://auth.rcgroup.client.embrays.live
+    description: Production server (uses live data)
+  - url: https://auth-dev.rcgroup.client.embrays.live
+    description: Development server (uses test data)
+
+paths:
+  /v1/login:
+    post:
+      security: 
+        - {}
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestBody'
+      responses:
+        '200':
+          description: 'Successful login'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseBody'
+        'default':
+          description: 'Unsuccessful login - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /v1/token:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: refreshAccessToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestBody'
+      responses:
+        '200':
+          description: 'Successful token refresh'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefreshResponseBody'
+        'default':
+          description: 'Unsuccessful login - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /v1/token/v1/decrypt:
+    post:
+      security:
+        - {}
+      operationId: decryptTokenData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DecryptTokenRequestBody"
+      responses:
+        '200':
+          description: 'Successful token validation'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        'default':
+          description: 'Unsuccessful login - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /v1/register:
+    post:
+      description: Register a new user
+      operationId: registerUser
+      security:
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequestBody'
+      responses:
+        '204':
+          description: 'Successfully created user'
+        'default':
+          description: 'Unsuccessful user creation - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody' 
+  /v1/forgot-password:
+    post:
+      description: User forgot password
+      operationId: forgotPassword
+      security:
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequestBody'
+      responses:
+        '204':
+          description: 'Successfully raised forgot password request'
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /v1/forgot-password/otp:
+    post:
+      description: User forgot password. OTP verification
+      operationId: forgotPasswordOtpVerification
+      security:
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordOtpVerificationRequestBody'
+      responses:
+        '204':
+          description: 'Successfully verified the user. Will allow user to reset password!'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForgotPasswordOtpVerificationResponseBody"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /v1/reset-password:
+    post:
+      description: Allow user to reset password
+      operationId: resetPassword
+      security:
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequestBody'
+      responses:
+        '204':
+          description: 'Successfully reset user password'
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorData:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z]{2-15}-\d{3}
+          maxLength: 18
+          minLength: 5
+        message:
+          type: string
+      required:
+        - "code"
+        - "message"
+    LoginRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        mobileNumber:
+          $ref: '#/components/schemas/MobileNumber'
+        password:
+          type: string
+      required:
+        - "mobileNumber"
+    LoginResponseBody:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - "token"
+        - "refreshToken"
+    ErrorResponseBody:
+      type: object
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorData'
+          maxItems: 5
+          minItems: 1
+      required:
+        - "errors"
+    TokenRefreshRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - "refreshToken"
+    TokenRefreshResponseBody:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+      required:
+        - "token"
+    DecryptTokenRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        token: 
+          type: string
+      required: ["token"]
+    UserRegistrationRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        userType:
+          $ref: "common_schemas-contract.yml#/components/schemas/UserType"
+        mobileNumber:
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+        password:
+          $ref: '#/components/schemas/Password'
+    ForgotPasswordRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        userType:
+          $ref: "#/components/schemas/UserType"
+        mobileNumber:
+          $ref: "#/components/schemas/MobileNumber"
+    ForgotPasswordOtpVerificationRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        userType:
+          $ref: "#/components/schemas/UserType"
+        mobileNumber:
+          $ref: "#/components/schemas/MobileNumber"
+        otp:
+          $ref: "#/components/schemas/Otp"
+    ForgotPasswordOtpVerificationResponseBody:
+      type: object
+      additionalProperties: false
+      properties:
+        resetPasswordKey:
+          type: string
+    ResetPasswordRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        userType:
+          $ref: "#/components/schemas/UserType"
+        mobileNumber:
+          $ref: "#/components/schemas/MobileNumber"
+        newPassword:
+          type: string
+        resetKey:
+          type: string
+    Otp:
+      type: integer
+      format: int32
+      pattern: ^\d{6}$
+      maximum: 999999
+      minimum: 000000
+    Password:
+      type: string
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        userType:
+          $ref: "common_schemas-contract.yml#/components/schemas/UserType"
+        userId:
+          $ref: "common_schemas-contract.yml#/components/schemas/Id"
+        mobileNumber:
+          $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
