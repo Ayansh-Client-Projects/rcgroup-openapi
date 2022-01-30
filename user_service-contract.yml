@@ -408,6 +408,81 @@ paths:
               schema:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
 
+  /v1/companies:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminCompanyList
+      responses:
+        '200':
+          description: Successfully fetched admin company list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCompanyList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  
+  /v1/companies/v1/{companyId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminCompanyInfo
+      parameters:
+        - in: path
+          name: companyId
+          schema:
+            type: string
+          required: true
+          description: Admin Company ID whose information is to be fetched
+      responses:
+        '200':
+          description: Successfully fetched admin company info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCompany"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      security:
+        - BearerAuth: []
+      operationId: updateAdminCompanyInfo
+      parameters:
+        - in: path
+          name: companyId
+          schema:
+            type: string
+          required: true
+          description: Admin Company ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminCompanyUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated admin company info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCompany"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody' 
+
   /v1/user:
     get:
       security:
@@ -571,6 +646,25 @@ components:
                 ADMIN_STAFF: "#/components/schemas/AdminStaff"
                 SALESMAN: "#/components/schemas/Salesman"
                 CUSTOMER: "#/components/schemas/Customer"
+    AdminCompanyUpdateRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        associatedCompanyList:
+          type: array
+          items:
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
+    AdminCompanyList:
+      type: array
+      additionalProperties: false
+      items:
+        $ref: "#/components/schemas/AdminCompany"
+    AdminCompany:
+      allOf:
+        - $ref: "#/components/schemas/AdminCompanyUpdateRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
 
     # Internal Schemas
     CompanyName:
@@ -589,9 +683,9 @@ components:
     CompanyType:
       type: string
       enum:
-        - proprietorship
-        - partnership
-        - pvt. ltd.
+        - Proprietorship
+        - Partnership
+        - Pvt. Ltd.
       x-enum-vars:
         - PROPRIETORSHIP
         - PARTNERSHIP
