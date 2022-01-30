@@ -132,7 +132,7 @@ components:
       allOf:
         - $ref: "#components/schemas/SalesmanUpdateRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
-    AdminUpdateRequestBody:
+    AdminStaffUpdateRequestBody:
       type: object
       additionalProperties: false
       properties:
@@ -151,12 +151,12 @@ components:
         bankDetails:
           $ref: "#/components/schemas/UserBankDetails"
       required: ["fullName", "address", "mobileNumber", "email", "panNumber", "aadhaarNumber", "bankDetails"]
-    AdminList:
+    AdminStaffList:
       type: array
       items:
-        $ref: "#/components/schemas/Admin"
+        $ref: "#/components/schemas/AdminStaff"
       minItems: 0
-    Admin:
+    AdminStaff:
       allOf:
         - $ref: "#components/schemas/AdminUpdateRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
