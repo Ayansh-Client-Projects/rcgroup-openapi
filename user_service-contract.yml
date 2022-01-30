@@ -48,15 +48,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref:
-
+                $ref: "#/components/schemas/CustomerList"
+  /v1/customers/v1/{customerId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getCustomerInfo
+      responses:
+        '200':
+          description: Successfully fetched customer info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+    post:
+      security:
+        - BearerAuth: []
+      
         
 components:
   securitySchemes:
     BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+      $ref: "common_schemas-contract.yml#/components/securitySchemes/BearerAuth"
   schemas:
     # Main Schemas
     ErrorData:
@@ -112,8 +125,6 @@ components:
           $ref: '#/components/schemas/FullName'
         address:
           $ref: "#/components/schemas/Address"
-        mobileNumber:
-          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         email:
           $ref: '#/components/schemas/Email'
         panNumber:
@@ -132,6 +143,11 @@ components:
       allOf:
         - $ref: "#components/schemas/SalesmanUpdateRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+        - type: object
+          additionalProperties: false
+          properties:
+            mobileNumber:
+              $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
     AdminStaffUpdateRequestBody:
       type: object
       additionalProperties: false
@@ -140,8 +156,6 @@ components:
           $ref: '#/components/schemas/FullName'
         address:
           $ref: "#/components/schemas/Address"
-        mobileNumber:
-          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         email:
           $ref: '#/components/schemas/Email'
         panNumber:
@@ -158,8 +172,30 @@ components:
       minItems: 0
     AdminStaff:
       allOf:
+        - $ref: "#components/schemas/AdminStaffUpdateRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+        - type: object
+          additionalProperties: false
+          properties:
+            mobileNumber:
+              $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+    AdminUpdateRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
+        fullName:
+          $ref: "#/components/schemas/FullName"
+    Admin:
+      allOf:
         - $ref: "#components/schemas/AdminUpdateRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+        - type: object
+          additionalProperties: false
+          properties:
+            mobileNumber:
+              $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
 
     # Internal Schemas
     CompanyName:

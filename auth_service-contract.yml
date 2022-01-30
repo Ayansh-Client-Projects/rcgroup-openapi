@@ -244,9 +244,7 @@ paths:
 components:
   securitySchemes:
     BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+      $ref: "common_schemas-contract.yml#/components/securitySchemes/BearerAuth"
   schemas:
     ErrorData:
       type: object
