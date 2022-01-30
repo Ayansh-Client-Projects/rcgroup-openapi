@@ -167,6 +167,12 @@ components:
       additionalProperties: false
       items:
         $ref: '#/components/schemas/Category'
+    UpdateProductRequestBody:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: "#components/schemas/Product"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
     ProductsResponseBody:
       type: array
       additionalProperties: false
