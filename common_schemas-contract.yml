@@ -11,6 +11,8 @@ servers:
   - url: https://auth-dev.rcgroup.client.embrays.live
     description: Development server (uses test data)
 
+paths: -
+
 components:
   securitySchemes:
     BearerAuth:
