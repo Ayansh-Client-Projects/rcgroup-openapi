@@ -110,7 +110,7 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody' 
-  /v1/mobile-number/verify:
+  /v1/mobile-number/v1/verify:
     post:
       description: Verify Mobile Number
       operationId: verifyMobileNumber
@@ -151,7 +151,7 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody'
-  /v1/forgot-password/otp:
+  /v1/forgot-password/v1/otp:
     post:
       description: User forgot password. OTP verification
       operationId: forgotPasswordOtpVerification
@@ -219,7 +219,7 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody'
-  /v1/reset-mobile-number/resend-otp:
+  /v1/reset-mobile-number/v1/resend-otp:
     post:
       description: Resend otp to the mobile number of a user
       operationId: resendOtp
