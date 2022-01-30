@@ -84,6 +84,7 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody'
+  
   /v1/register:
     post:
       description: Register a new user
@@ -97,14 +98,38 @@ paths:
             schema:
               $ref: '#/components/schemas/UserRegistrationRequestBody'
       responses:
-        '204':
+        '200':
           description: 'Successfully created user'
+          content:
+            application/json: 
+              schema:
+                $ref: "#/components/schemas/User"
         'default':
           description: 'Unsuccessful user creation - User/Server Error'
           content:
             application/json: 
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody' 
+  /v1/mobile-number/verify:
+    post:
+      description: Verify Mobile Number
+      operationId: verifyMobileNumber
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyMobileNumberRequestBody"
+      responses:
+        '204':
+          description: Successfully verified mobile number
+        'default':
+          description: 'Unsuccessful user creation - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody' 
+        
   /v1/forgot-password:
     post:
       description: User forgot password
@@ -166,6 +191,49 @@ paths:
       responses:
         '204':
           description: 'Successfully reset user password'
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  
+  /v1/reset-mobile-number:
+    post:
+      description: Reset mobile number of user
+      operationId: resetMobileNumber
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetMobileNumberRequestBody'
+      responses:
+        '204':
+          description: 'Successfully sent otp for new mobile number'
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /v1/reset-mobile-number/resend-otp:
+    post:
+      description: Resend otp to the mobile number of a user
+      operationId: resendOtp
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendOtpRequestBody'
+      responses:
+        '204':
+          description: 'Successfully re-sent otp for mobile number'
         'default':
           description: 'Unsuccessful request - User/Server Error'
           content:
@@ -260,6 +328,14 @@ components:
           $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         password:
           $ref: '#/components/schemas/Password'
+    VerifyMobileNumberRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        otp: 
+          $ref: "#/components/schemas/Otp"
+        mobileNumber:
+          $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
     ForgotPasswordRequestBody:
       type: object
       additionalProperties: false
@@ -296,6 +372,18 @@ components:
           type: string
         resetKey:
           type: string
+    ResetMobileNumberRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        mobileNumber: 
+          $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
+    ResendOtpRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        mobileNumber: 
+          $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
     Otp:
       type: integer
       format: int32
@@ -314,3 +402,5 @@ components:
           $ref: "common_schemas-contract.yml#/components/schemas/Id"
         mobileNumber:
           $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
+        isVerified:
+          type: boolean
