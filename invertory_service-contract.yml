@@ -13,6 +13,8 @@ servers:
 paths:
   /v1/categories: 
     get:
+      security:
+        - BearerAuth: []
       summary: 'Get root level categories'
       operationId: getAllRootCategories
       responses:
@@ -30,6 +32,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseBody'
   /v1/categories/{categoryId}/subcategories:
     get:
+      security:
+        - BearerAuth: []
       summary: Get all subcategories of this category
       operationId: getAllChildCategories
       responses:
@@ -47,8 +51,65 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseBody'
   /v1/categories/{categoryId}/products:
     get:
+      security:
+        - BearerAuth: []
       summary: Gets all products related which belong to that subcategory
       operationId: getAllProducts
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Get product list based on search query
+        - in: query
+          name: availableQty
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on availableQty query
+        - in: query
+          name: availableQty
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on availableQty query
+        - in: query
+          name: scheme
+          schema:
+            type: string
+          required: false
+          description: Get product list based on scheme query
+        - in: query
+          name: application
+          schema:
+            type: string
+          required: false
+          description: Get product list based on application query
+        - in: query
+          name: priceGreaterThan
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on priceGreater query
+        - in: query
+          name: priceLessThan
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on priceLessThan query
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on page number for pagination
+        - in: query
+          name: perPageQty
+          schema:
+            type: integer
+          required: false
+          description: Get N (perPageQty) number of products in this response  
       responses:
         '200':
           description: 'Get All Product Details'
@@ -64,6 +125,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseBody'
   /v1/products/{productId}:
     get:
+      security:
+        - BearerAuth: []
       summary: Get Details of Individual Product
       operationId: getProductDetails
       responses:
@@ -80,6 +143,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody'
     delete:
+      security:
+        - BearerAuth: []
       summary: Delete Individual Product
       responses:
         '204':
@@ -95,6 +160,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseBody'
     post:
+      security:
+        - BearerAuth: []
       summary: Admin can update details of individual product
       operationId: updateProductDetails
       requestBody:
@@ -118,6 +185,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseBody' 
   /v1/products/upload:
     post:
+      security:
+        - BearerAuth: []
       summary: Admin can upload excel
       operationId: groupUpdateProductDetails
       requestBody:
