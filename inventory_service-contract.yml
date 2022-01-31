@@ -1,0 +1,285 @@
+openapi: 3.0.3
+
+info:
+  title: RC Group
+  version: 1.0.0
+
+servers:
+  - url: https://api.rcgroup.client.embrays.live/inventory
+    description: Production server (uses live data)
+  - url: https://api-dev.rcgroup.client.embrays.live/inventory
+    description: Development server (uses test data)
+
+paths:
+  /v1/categories: 
+    get:
+      summary: 'Get top-level categories'
+      operationId: getTopLevelCategoryList
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 'Successfully fetched top-level categories'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/categories/v1/{categoryId}/v1/subcategories:
+    get:
+      summary: Get all sub-categories of the given category
+      operationId: getSubCategoryList
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Successfully fetched sub-category list for the given category'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/categories/v1/{categoryId}/v1/products:
+    get:
+      summary: Gets products that belong to the given category
+      operationId: getProductList
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Successfully fetched product list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/categories/v1/{categoryId}/v1/products/v1/{productId}:
+    get:
+      summary: Get Details of Individual Product
+      operationId: getProductInfo
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successfully fetched individual product info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    delete:
+      summary: Delete Individual Product
+      operationId: deleteProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Successfully deleted individual product
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      summary: Update details of individual product. Only role = admin/admin-staff is allowed 
+      operationId: updateProductInfo
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequestBody'
+      responses:
+        '200':
+          description: Successfully updated product info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/products/v1/upload:
+    post:
+      summary: Upload excel of products to update on the platform. Only role=admin/admin-staff can do this
+      operationId: groupUpdateProductDetails
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '204':
+          description: Successfully updated products mentioned in the csv file
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/UpdateProductRequestBody'
+# TODO - update category/subcategory
+# TODO - add category/subcategory
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: 'common_schemas-contract.yml#/components/securitySchemes/BearerAuth'
+  schemas:
+    CategoryList:
+      type: array
+      additionalProperties: false
+      items:
+        $ref: '#/components/schemas/Category'
+      minItems: 0
+    Category:
+      type: object
+      additionalProperties: false
+      properties: 
+        id:
+          $ref: 'common_schemas-contract.yml#/components/schemas/Id'
+        name:
+          type: string
+        contains:
+          type: string
+          enum:
+            - PRODUCT
+            - SUB_CATEGORY
+      required:
+        - "id"
+        - "name"
+        - "contains"
+    
+    UpdateProductRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        partNumber:
+          type: string
+        name:
+          type: string
+          maxLength: 100
+          minLength: 3
+        mrp:
+          type: integer
+          format: int32
+          minimum: 1
+        schemes:
+          type: array
+          items:
+            type: string
+        availaibleQty:
+          type: integer
+          description: This field will only be visible for role = admin-staff or admin
+        availability:
+          type: string
+          enum:
+            - IN_STOCK
+            - OUT_OF_STOCK
+        description:
+          type: string
+        applications:
+          type: array
+          items:
+            type: string
+        photoUrl: 
+          type: string
+          format: uri
+        categoryHierarchy:
+          type: array
+          items: 
+            allOf:
+              - $ref: '#/components/schemas/Category'
+              - type: object
+                additionalProperties: false
+                properties:
+                  level:
+                    type: integer
+                    format: int32
+      required: [id, partNumber, name, mrp, schemes, availability, description, applications, 
+        photoUrl, categoryHierarchy]
+    
+    ProductList:
+      type: array
+      additionalProperties: false
+      items:
+        $ref: '#/components/schemas/Product'
+      minItems: 0
+    Product:
+      allOf:
+        - $ref: "#/components/schemas/UpdateProductRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"

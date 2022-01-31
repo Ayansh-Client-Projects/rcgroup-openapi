@@ -6,9 +6,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://auth.rcgroup.client.embrays.live
+  - url: https://api.rcgroup.client.embrays.live/user
     description: Production server (uses live data)
-  - url: https://auth-dev.rcgroup.client.embrays.live
+  - url: https://api-dev.rcgroup.client.embrays.live/user
     description: Development server (uses test data)
 
 paths:
@@ -41,36 +41,473 @@ paths:
           schema:
             type: integer
           required: false
-          description: Get N (perPageQty) number of customers in this response
+          description: Get N (perPageQty) number of users in this response
       responses:
         '200':
           description: Successfully fetched customer list
           content:
             application/json:
               schema:
-                $ref:
+                $ref: "#/components/schemas/CustomerList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/customers/v1/{customerId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getCustomerInfo
+      parameters:
+        - in: path
+          name: customerId
+          schema:
+            type: string
+          required: true
+          description: Customer ID whose information is to be fetched
+      responses:
+        '200':
+          description: Successfully fetched customer info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      security:
+        - BearerAuth: []
+      operationId: updateCustomerInfo
+      parameters:
+        - in: path
+          name: customerId
+          schema:
+            type: string
+          required: true
+          description: Customer ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated customer info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  
+  /v1/salesmen:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getSalesmenList
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Get user list based on search query
+        - in: query
+          name: pincode
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on pincode query
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on page number for pagination
+        - in: query
+          name: perPageQty
+          schema:
+            type: integer
+          required: false
+          description: Get N (perPageQty) number of users in this response
+      responses:
+        '200':
+          description: Successfully fetched salesman list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SalesmanList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/salesmen/v1/{salesmanId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getSalesmanInfo
+      parameters:
+        - in: path
+          name: salesmanId
+          schema:
+            type: string
+          required: true
+          description: Salesman ID whose information is to be fetched
+      responses:
+        '200':
+          description: Successfully fetched salesman info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Salesman"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      security:
+        - BearerAuth: []
+      operationId: updateSalesmanInfo
+      parameters:
+        - in: path
+          name: salesmanId
+          schema:
+            type: string
+          required: true
+          description: Salesman ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SalesmanUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated salesman info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Salesman"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  
+  /v1/admin-staffs:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminStaffList
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Get user list based on search query
+        - in: query
+          name: pincode
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on pincode query
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on page number for pagination
+        - in: query
+          name: perPageQty
+          schema:
+            type: integer
+          required: false
+          description: Get N (perPageQty) number of users in this response
+      responses:
+        '200':
+          description: Successfully fetched admin staff list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStaffList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/admin-staffs/v1/{adminStaffId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminStaffInfo
+      parameters:
+        - in: path
+          name: adminStaffId
+          schema:
+            type: string
+          required: true
+          description: Admin Staff ID whose information is to be fetched
+      responses:
+        '200':
+          description: Successfully fetched admin staff info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStaff"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      security:
+        - BearerAuth: []
+      operationId: updateAdminStaffInfo
+      parameters:
+        - in: path
+          name: adminStaffId
+          schema:
+            type: string
+          required: true
+          description: Admin Staff ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminStaffUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated admin staff info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStaff"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  
+  /v1/admins:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminList
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Get user list based on search query
+        - in: query
+          name: pincode
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on pincode query
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Get user list based on page number for pagination
+        - in: query
+          name: perPageQty
+          schema:
+            type: integer
+          required: false
+          description: Get N (perPageQty) number of users in this response
+      responses:
+        '200':
+          description: Successfully fetched admin list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/admins/v1/{adminId}:  
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminInfo
+      parameters:
+        - in: path
+          name: adminId
+          schema:
+            type: string
+          required: true
+          description: Admin ID whose information is to be fetched
+      responses:
+        '200':
+          description: Successfully fetched admin info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Admin"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      security:
+        - BearerAuth: []
+      operationId: updateAdminInfo
+      parameters:
+        - in: path
+          name: adminId
+          schema:
+            type: string
+          required: true
+          description: Admin ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated admin info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Admin"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
 
-        
+  /v1/companies:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminCompanyList
+      responses:
+        '200':
+          description: Successfully fetched admin company list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCompanyList"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  
+  /v1/companies/v1/{companyId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAdminCompanyInfo
+      parameters:
+        - in: path
+          name: companyId
+          schema:
+            type: string
+          required: true
+          description: Admin Company ID whose information is to be fetched
+      responses:
+        '200':
+          description: Successfully fetched admin company info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCompany"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      security:
+        - BearerAuth: []
+      operationId: updateAdminCompanyInfo
+      parameters:
+        - in: path
+          name: companyId
+          schema:
+            type: string
+          required: true
+          description: Admin Company ID whose information is to be fetched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminCompanyUpdateRequestBody"
+      responses:
+        '200':
+          description: Successfully updated admin company info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCompany"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody' 
+
+  /v1/user:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getUserInfo
+      responses:
+        '200':
+          description: Successfully fetched currently logged in user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        'default':
+          description: 'Unsuccessful request - User/Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    
 components:
   securitySchemes:
     BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+      $ref: "common_schemas-contract.yml#/components/securitySchemes/BearerAuth"
   schemas:
     # Main Schemas
-    ErrorData:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          type: string
-          pattern: ^[A-Z]{2-15}-\d{3}
-          maxLength: 18
-          minLength: 5
-        message:
-          type: string
-      required: ["code", "message"]
     CustomerUpdateRequestBody:
       type: object
       additionalProperties: false
@@ -102,7 +539,7 @@ components:
       minItems: 0
     Customer:
       allOf:
-        - $ref: "#components/schemas/CustomerUpdateRequestBody"
+        - $ref: "#/components/schemas/CustomerUpdateRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
     SalesmanUpdateRequestBody:
       type: object
@@ -112,8 +549,6 @@ components:
           $ref: '#/components/schemas/FullName'
         address:
           $ref: "#/components/schemas/Address"
-        mobileNumber:
-          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         email:
           $ref: '#/components/schemas/Email'
         panNumber:
@@ -130,8 +565,14 @@ components:
       minItems: 0
     Salesman:
       allOf:
-        - $ref: "#components/schemas/SalesmanUpdateRequestBody"
+        - $ref: "#/components/schemas/SalesmanUpdateRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+        - type: object
+          additionalProperties: false
+          properties:
+            mobileNumber:
+              $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+          required: [mobileNumber]
     AdminStaffUpdateRequestBody:
       type: object
       additionalProperties: false
@@ -140,8 +581,6 @@ components:
           $ref: '#/components/schemas/FullName'
         address:
           $ref: "#/components/schemas/Address"
-        mobileNumber:
-          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         email:
           $ref: '#/components/schemas/Email'
         panNumber:
@@ -158,7 +597,73 @@ components:
       minItems: 0
     AdminStaff:
       allOf:
-        - $ref: "#components/schemas/AdminUpdateRequestBody"
+        - $ref: "#/components/schemas/AdminStaffUpdateRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+        - type: object
+          additionalProperties: false
+          properties:
+            mobileNumber:
+              $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+    AdminUpdateRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
+        fullName:
+          $ref: "#/components/schemas/FullName"
+    AdminList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Admin"
+      minItems: 0
+    Admin:
+      allOf:
+        - $ref: "#/components/schemas/AdminUpdateRequestBody"
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+        - type: object
+          additionalProperties: false
+          properties:
+            mobileNumber:
+              $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+          required: [mobileNumber]
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        userType:
+          $ref: "common_schemas-contract.yml#/components/schemas/UserType"
+        data:
+          oneOf:
+            - $ref: "#/components/schemas/Admin"
+            - $ref: "#/components/schemas/AdminStaff"
+            - $ref: "#/components/schemas/Salesman"
+            - $ref: "#/components/schemas/Customer"
+          discriminator:
+              propertyName: userType
+              mapping:
+                ADMIN: "#/components/schemas/Admin"
+                ADMIN_STAFF: "#/components/schemas/AdminStaff"
+                SALESMAN: "#/components/schemas/Salesman"
+                CUSTOMER: "#/components/schemas/Customer"
+    AdminCompanyUpdateRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        associatedCompanyList:
+          type: array
+          items:
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
+    AdminCompanyList:
+      type: array
+      additionalProperties: false
+      items:
+        $ref: "#/components/schemas/AdminCompany"
+    AdminCompany:
+      allOf:
+        - $ref: "#/components/schemas/AdminCompanyUpdateRequestBody"
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
 
     # Internal Schemas
@@ -178,9 +683,9 @@ components:
     CompanyType:
       type: string
       enum:
-        - proprietorship
-        - partnership
-        - pvt. ltd.
+        - Proprietorship
+        - Partnership
+        - Pvt. Ltd.
       x-enum-vars:
         - PROPRIETORSHIP
         - PARTNERSHIP
@@ -216,6 +721,7 @@ components:
         accountNumber:
           type: number
           maxLength: 18
+      required: [accountHolderName, ifscCode, accountNumber]
     Address:
       type: object
       additionalProperties: false

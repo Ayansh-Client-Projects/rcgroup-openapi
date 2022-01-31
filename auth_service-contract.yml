@@ -6,9 +6,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://auth.rcgroup.client.embrays.live
+  - url: https://api.rcgroup.client.embrays.live/auth
     description: Production server (uses live data)
-  - url: https://auth-dev.rcgroup.client.embrays.live
+  - url: https://api-dev.rcgroup.client.embrays.live/auth
     description: Development server (uses test data)
 
 paths:
@@ -35,7 +35,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/token:
     post:
       security:
@@ -59,7 +59,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/token/v1/decrypt:
     post:
       security:
@@ -83,7 +83,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   
   /v1/register:
     post:
@@ -109,7 +109,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody' 
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/mobile-number/v1/verify:
     post:
       description: Verify Mobile Number
@@ -128,7 +128,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody' 
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
         
   /v1/forgot-password:
     post:
@@ -150,7 +150,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/forgot-password/v1/otp:
     post:
       description: User forgot password. OTP verification
@@ -175,7 +175,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/reset-password:
     post:
       description: Allow user to reset password
@@ -196,7 +196,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   
   /v1/reset-mobile-number:
     post:
@@ -218,7 +218,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/reset-mobile-number/v1/resend-otp:
     post:
       description: Resend otp to the mobile number of a user
@@ -239,35 +239,19 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: '#/components/schemas/ErrorResponseBody'
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
 
 components:
   securitySchemes:
     BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+      $ref: "common_schemas-contract.yml#/components/securitySchemes/BearerAuth"
   schemas:
-    ErrorData:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          type: string
-          pattern: ^[A-Z]{2-15}-\d{3}
-          maxLength: 18
-          minLength: 5
-        message:
-          type: string
-      required:
-        - "code"
-        - "message"
     LoginRequestBody:
       type: object
       additionalProperties: false
       properties:
         mobileNumber:
-          $ref: '#/components/schemas/MobileNumber'
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         password:
           type: string
       required:
@@ -283,18 +267,6 @@ components:
       required:
         - "token"
         - "refreshToken"
-    ErrorResponseBody:
-      type: object
-      additionalProperties: false
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorData'
-          maxItems: 5
-          minItems: 1
-      required:
-        - "errors"
     TokenRefreshRequestBody:
       type: object
       additionalProperties: false
@@ -328,6 +300,7 @@ components:
           $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         password:
           $ref: '#/components/schemas/Password'
+      required: [userType, mobileNumber, password]
     VerifyMobileNumberRequestBody:
       type: object
       additionalProperties: false
@@ -336,54 +309,61 @@ components:
           $ref: "#/components/schemas/Otp"
         mobileNumber:
           $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
+      required: [otp, mobileNumber]
     ForgotPasswordRequestBody:
       type: object
       additionalProperties: false
       properties:
         userType:
-          $ref: "#/components/schemas/UserType"
+          $ref: 'common_schemas-contract.yml#/components/schemas/UserType'
         mobileNumber:
-          $ref: "#/components/schemas/MobileNumber"
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
+      required: [userType, mobileNumber]
     ForgotPasswordOtpVerificationRequestBody:
       type: object
       additionalProperties: false
       properties:
         userType:
-          $ref: "#/components/schemas/UserType"
+          $ref: 'common_schemas-contract.yml#/components/schemas/UserType'
         mobileNumber:
-          $ref: "#/components/schemas/MobileNumber"
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         otp:
           $ref: "#/components/schemas/Otp"
+      required: [userType, mobileNumber, otp]
     ForgotPasswordOtpVerificationResponseBody:
       type: object
       additionalProperties: false
       properties:
         resetPasswordKey:
           type: string
+      required: [resetPasswordKey]
     ResetPasswordRequestBody:
       type: object
       additionalProperties: false
       properties:
         userType:
-          $ref: "#/components/schemas/UserType"
+          $ref: 'common_schemas-contract.yml#/components/schemas/UserType'
         mobileNumber:
-          $ref: "#/components/schemas/MobileNumber"
+          $ref: 'common_schemas-contract.yml#/components/schemas/MobileNumber'
         newPassword:
           type: string
         resetKey:
           type: string
+      required: [userType, mobileNumber, newPassword, resetKey]
     ResetMobileNumberRequestBody:
       type: object
       additionalProperties: false
       properties:
         mobileNumber: 
           $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
+      required: [mobileNumber]
     ResendOtpRequestBody:
       type: object
       additionalProperties: false
       properties:
         mobileNumber: 
           $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
+      required: [mobileNumber]
     Otp:
       type: integer
       format: int32
@@ -404,3 +384,4 @@ components:
           $ref: "common_schemas-contract.yml#/components/schemas/MobileNumber"
         isVerified:
           type: boolean
+      required: [userType, userId, mobileNumber, isVerified]
