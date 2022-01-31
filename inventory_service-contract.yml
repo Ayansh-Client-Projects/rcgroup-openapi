@@ -30,6 +30,49 @@ paths:
             application/json: 
               schema:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      summary: Add top level categories
+      operationId: postTopLevelCategoryList
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryList'
+      responses:
+        '200':
+          description: 'Successfully fetched top category list'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+  /v1/categories/v1/{categoryId}:
+    post:
+      summary: Update category details. Only role = admin/admin-staff is allowed
+      operationID: updateCategory
+      security:
+        - BearerAuth: []   
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      
   /v1/categories/v1/{categoryId}/v1/subcategories:
     get:
       summary: Get all sub-categories of the given category
@@ -45,6 +88,30 @@ paths:
       responses:
         '200':
           description: 'Successfully fetched sub-category list for the given category'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
+    post:
+      summary: Add new subcategories
+      operationId: postSubCategoryList
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryList'
+      responses:
+        '200':
+          description: 'Successfully fetched subcategory list'
           content:
             application/json:
               schema:
