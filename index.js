@@ -1,4 +1,5 @@
 const SwaggerParser = require("@apidevtools/swagger-parser");
+const Yaml = require("yaml");
 const fs = require("fs").promises;
 const path = require("path");
 
@@ -10,30 +11,30 @@ const openapiFiles = [
 	"inventory_service-contract.yml",
 ];
 
-openapiFiles.forEach((fileName) => {
-	SwaggerParser.validate(path.join(sourceFolder, fileName))
-		.then((api) => {
-			return SwaggerParser.bundle(api);
-		})
-		.then((bundledApi) => {
-			return SwaggerParser.dereference(bundledApi);
-		})
-		.then((bundledDeferencedApi) => {
-			return fs
-				.mkdir(destinationFolder, { recursive: true })
-				.then((_) =>
-					fs.writeFile(
-						path.join(destinationFolder, fileName),
-						JSON.stringify(bundledDeferencedApi, null, 2)
-					)
-				)
-				.then((x) => bundledDeferencedApi);
-		})
-		.then((api) =>
-			console.log(
-				"API name: %s\tVersion: %s\tDeferenced & Bundled",
-				api.info.title,
-				api.info.version
-			)
+fs.mkdir(destinationFolder, { recursive: true }).then((_) => {
+	const promises = [];
+	openapiFiles.forEach((fileName) => {
+		promises.push(
+			SwaggerParser.validate(path.join(sourceFolder, fileName))
+				.then((api) => {
+					return SwaggerParser.bundle(api, { yaml: true });
+				})
+				.then((bundledDeferencedApi) => {
+					return fs
+						.writeFile(
+							path.join(destinationFolder, fileName),
+							Yaml.stringify(bundledDeferencedApi)
+						)
+						.then((_) =>
+							console.log(
+								"API name: %s\tVersion: %s\tBundled",
+								bundledDeferencedApi.info.title,
+								bundledDeferencedApi.info.version
+							)
+						);
+				})
 		);
+	});
+
+	return Promise.all(promises);
 });

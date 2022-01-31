@@ -736,6 +736,8 @@ components:
           type: string
         country:
           type: string
+        pincode:
+          type: number
         landmark:
           type: string
-      required: ["line1", "line2", "city", "state", "country"]
+      required: ["line1", "line2", "city", "state", "country", "pincode"]
