@@ -32,7 +32,7 @@ paths:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
     post:
       summary: Add top level categories
-      operationId: postTopLevelCategoryList
+      operationId: addTopLevelCategories
       security:
         - BearerAuth: []
       requestBody:
@@ -40,10 +40,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CategoryList'
+              $ref: "common_schemas-contract.yml#/components/schemas/StringList"
       responses:
         '200':
-          description: 'Successfully fetched top category list'
+          description: 'Successfully added new top categories'
           content:
             application/json:
               schema:
@@ -57,7 +57,7 @@ paths:
   /v1/categories/v1/{categoryId}:
     post:
       summary: Update category details. Only role = admin/admin-staff is allowed
-      operationID: updateCategory
+      operationId: updateCategory
       security:
         - BearerAuth: []   
       parameters:
@@ -72,7 +72,19 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Category'
-      
+      responses:
+        '200':
+          description: Successfully updated category info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        'default':
+          description: 'Server Error'
+          content:
+            application/json: 
+              schema:
+                $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
   /v1/categories/v1/{categoryId}/v1/subcategories:
     get:
       summary: Get all sub-categories of the given category
@@ -100,7 +112,7 @@ paths:
                 $ref: 'common_schemas-contract.yml#/components/schemas/ErrorResponseBody'
     post:
       summary: Add new subcategories
-      operationId: postSubCategoryList
+      operationId: addSubCategories
       security:
         - BearerAuth: []
       requestBody:
@@ -108,10 +120,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CategoryList'
+              $ref: "common_schemas-contract.yml#/components/schemas/StringList"
       responses:
         '200':
-          description: 'Successfully fetched subcategory list'
+          description: 'Successfully added subcategories in the given category'
           content:
             application/json:
               schema:
@@ -134,6 +146,54 @@ paths:
           schema:
             type: string
           required: true
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Get product list based on search query
+        - in: query
+          name: availablility
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on availablility query
+        - in: query
+          name: hasScheme
+          schema:
+            type: boolean
+          required: false
+          description: Get product list based on whether it contains schemes
+        - in: query
+          name: application
+          schema:
+            type: string
+          required: false
+          description: Get product list based on application query
+        - in: query
+          name: priceGreaterThan
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on priceGreater query
+        - in: query
+          name: priceLesserThan
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on priceLesserThan query
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Get product list based on page number for pagination
+        - in: query
+          name: perPageQty
+          schema:
+            type: integer
+          required: false
+          description: Get N (perPageQty) number of products in this
       responses:
         '200':
           description: 'Successfully fetched product list'
@@ -259,8 +319,6 @@ paths:
             application/json: 
               schema:
                 $ref: '#/components/schemas/UpdateProductRequestBody'
-# TODO - update category/subcategory
-# TODO - add category/subcategory
 
 components:
   securitySchemes:
@@ -274,22 +332,21 @@ components:
         $ref: '#/components/schemas/Category'
       minItems: 0
     Category:
-      type: object
-      additionalProperties: false
-      properties: 
-        id:
-          $ref: 'common_schemas-contract.yml#/components/schemas/Id'
-        name:
-          type: string
-        contains:
-          type: string
-          enum:
-            - PRODUCT
-            - SUB_CATEGORY
-      required:
-        - "id"
-        - "name"
-        - "contains"
+      allOf:
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
+        - type: object
+          additionalProperties: false
+          properties: 
+            name:
+              type: string
+            contains:
+              type: string
+              enum:
+                - PRODUCT
+                - SUB_CATEGORY
+          required:
+            - "name"
+            - "contains"
     
     UpdateProductRequestBody:
       type: object
@@ -317,12 +374,12 @@ components:
           enum:
             - IN_STOCK
             - OUT_OF_STOCK
-        description:
+        application:
           type: string
-        applications:
+        suitableFor:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/SuitableFor"
         photoUrl: 
           type: string
           format: uri
@@ -339,7 +396,16 @@ components:
                     format: int32
       required: [id, partNumber, name, mrp, schemes, availability, description, applications, 
         photoUrl, categoryHierarchy]
-    
+    SuitableFor:
+      allOf:
+        - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo" 
+        - type: object
+          additionalProperties: false
+          properties:
+            name: 
+              type: string
+              description: This string will be converted to upper-case and must be unique
+
     ProductList:
       type: array
       additionalProperties: false

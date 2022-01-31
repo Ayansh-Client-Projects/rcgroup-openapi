@@ -65,4 +65,9 @@ components:
         updatedOn:
           $ref: "common_schemas-contract.yml#/components/schemas/Timestamp"
       required: ["id", "createdOn", "updatedOn"]
+    StringList:
+      type: array
+      additionalProperties: false
+      items:
+        type: string
     
