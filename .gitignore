@@ -1,2 +1,4 @@
 openapitools.json
 openapi-gen.txt
+node_modules/
+build/

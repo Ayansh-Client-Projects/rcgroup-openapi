@@ -1,0 +1,23 @@
+{
+  "name": "openapi",
+  "version": "1.0.0",
+  "description": "OpenAPI specification for all RC Group Services",
+  "main": "index.js",
+  "scripts": {
+    "build": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ayansh-Client-Projects/rcgroup-openapi.git"
+  },
+  "author": "AmanL04,ssshreyans26",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Ayansh-Client-Projects/rcgroup-openapi/issues"
+  },
+  "homepage": "https://github.com/Ayansh-Client-Projects/rcgroup-openapi#readme",
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.0.3"
+  }
+}
