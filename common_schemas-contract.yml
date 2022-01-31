@@ -56,7 +56,6 @@ components:
       description: EPOCH number
     ObjectMetaInfo:
       type: object
-      additionalProperties: false
       properties:
         id:
           $ref: "common_schemas-contract.yml#/components/schemas/Id"
@@ -67,7 +66,6 @@ components:
       required: ["id", "createdOn", "updatedOn"]
     StringList:
       type: array
-      additionalProperties: false
       items:
         type: string
     

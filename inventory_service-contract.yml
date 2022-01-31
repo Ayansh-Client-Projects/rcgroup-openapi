@@ -64,7 +64,7 @@ paths:
         - in: path
           name: categoryId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
       requestBody:
         required: true
@@ -95,7 +95,7 @@ paths:
         - in: path
           name: categoryId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
       responses:
         '200':
@@ -115,6 +115,12 @@ paths:
       operationId: addSubCategories
       security:
         - BearerAuth: []
+      parameters:
+        - in: path
+          name: categoryId
+          schema:
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
+          required: true
       requestBody:
         required: true
         content:
@@ -144,7 +150,7 @@ paths:
         - in: path
           name: categoryId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
         - in: query
           name: search
@@ -217,12 +223,12 @@ paths:
         - in: path
           name: categoryId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
         - in: path
           name: productId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
       responses:
         '200':
@@ -246,12 +252,12 @@ paths:
         - in: path
           name: categoryId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
         - in: path
           name: productId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
       responses:
         '204':
@@ -271,12 +277,12 @@ paths:
         - in: path
           name: categoryId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
         - in: path
           name: productId
           schema:
-            type: string
+            $ref: "common_schemas-contract.yml#/components/schemas/Id"
           required: true
       requestBody:
         required: true
@@ -327,7 +333,6 @@ components:
   schemas:
     CategoryList:
       type: array
-      additionalProperties: false
       items:
         $ref: '#/components/schemas/Category'
       minItems: 0
@@ -335,10 +340,10 @@ components:
       allOf:
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo"
         - type: object
-          additionalProperties: false
           properties: 
             name:
               type: string
+              maxLength: 50
             contains:
               type: string
               enum:
@@ -350,7 +355,6 @@ components:
     
     UpdateProductRequestBody:
       type: object
-      additionalProperties: false
       properties:
         partNumber:
           type: string
@@ -389,26 +393,26 @@ components:
             allOf:
               - $ref: '#/components/schemas/Category'
               - type: object
-                additionalProperties: false
                 properties:
                   level:
                     type: integer
                     format: int32
-      required: [id, partNumber, name, mrp, schemes, availability, description, applications, 
-        photoUrl, categoryHierarchy]
+                required: [level]
+      required: [partNumber, name, mrp, schemes, availability, description, application,
+        suitableFor, photoUrl, categoryHierarchy]
     SuitableFor:
       allOf:
         - $ref: "common_schemas-contract.yml#/components/schemas/ObjectMetaInfo" 
         - type: object
-          additionalProperties: false
           properties:
             name: 
               type: string
               description: This string will be converted to upper-case and must be unique
+          required:
+            - name
 
     ProductList:
       type: array
-      additionalProperties: false
       items:
         $ref: '#/components/schemas/Product'
       minItems: 0
